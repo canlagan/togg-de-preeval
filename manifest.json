@@ -1,0 +1,16 @@
+{
+  "name": "Togg Germany \u2014 Partner Pre-Evaluation",
+  "short_name": "Togg DE PreEval",
+  "description": "Field screening tool for evaluating candidate Togg service partners in Germany.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#EAF6F5",
+  "theme_color": "#009E97",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -330,7 +330,7 @@ const TH=100, TM=55, TL=15;
 const CATEGORIES = [
   {
     id:'alan', title:'Physical Space & Workshop Readiness', weight:20,
-    hint:'Existing / potential total workshop area, dedicated BEV-Togg space, lift capacity, and internet/network infrastructure.',
+    hint:'Existing / potential total workshop area, dedicated BEV-Togg space, lift capacity, internet/network infrastructure, and DC fast-charging readiness.',
     items:[
       { id:'toplamAlan', type:'areaRatio', label:'Existing / Potential Total Workshop & Service Area',
         refKey:'totalArea', unit:'m²',
@@ -353,6 +353,13 @@ const CATEGORIES = [
           {v:TH, cls:'high', title:'\u2265 100 Mbps available', desc:'Confirmed or estimated connection meets or exceeds the minimum requirement'},
           {v:TM, cls:'mid', title:'Below 100 Mbps, upgrade possible', desc:'Current speed is insufficient, but an upgrade can realistically be arranged'},
           {v:TL, cls:'low', title:'Insufficient, no viable upgrade', desc:'Connection is well below requirement and no clear upgrade path exists'},
+        ]
+      },
+      { id:'dcAltyapi', type:'tier', label:'DC Fast-Charging Infrastructure (minimum 1 \u00d7 60kW DC station)',
+        options:[
+          {v:100, cls:'high', title:'Ready now \u2014 full score', desc:'At least one 60kW+ DC charging station is already installed and operational'},
+          {v:50, cls:'mid', title:'Not ready, but infrastructure suitable \u2014 half score', desc:'Electrical capacity/space can support adding a 60kW DC station without a transformer upgrade'},
+          {v:0, cls:'low', title:'Not suitable, transformer investment required \u2014 zero score', desc:'Existing electrical infrastructure cannot support it without a transformer upgrade'},
         ]
       },
     ]
@@ -1108,7 +1115,6 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(err=>console.error('Service worker registration failed', err));
   });
 }
-
 </script>
 </body>
 </html>

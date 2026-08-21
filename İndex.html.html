@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Togg Germany — Service Partner Pre-Evaluation Tool</title>
+<style>
+  :root{
+    --bg:#EAF6F5; --panel:#FFFFFF; --panel2:#F1FAF9; --line:#D8ECEA;
+    --text:#16302E; --muted:#5E7876; --accent:#009E97; --accent-dim:#D2F1EC;
+    --warn:#C97A2E; --bad:#D14C4C; --blue:#2E7FBF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.45;padding-bottom:130px;}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px;}
+
+  header.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:22px 4px 18px;border-bottom:1px solid var(--line);margin-bottom:22px;flex-wrap:wrap;}
+  .brand{display:flex;flex-direction:column;gap:4px;}
+  .brand .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;}
+  .brand h1{margin:0;font-size:21px;font-weight:800;letter-spacing:-0.01em;}
+  .brand .sub{color:var(--muted);font-size:13px;}
+
+  .meta-inputs{display:flex;gap:10px;flex-wrap:wrap;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  input[type=text],input[type=date],input[type=number],input[type=url],select,textarea{
+    background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;
+  }
+  input[type=text]{min-width:170px;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,60,56,.05);}
+  .card h2{margin:0 0 4px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px;}
+  .card h2 .num{width:24px;height:24px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--accent);flex-shrink:0;}
+  .card .hint{color:var(--muted);font-size:12.5px;margin:0 0 16px;}
+  .weight-tag{font-size:11px;color:var(--muted);font-weight:600;margin-left:auto;}
+
+  .badge{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;color:#fff;margin-right:6px;}
+
+  .cat-progress{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .cat-progress .bar{flex:1;height:7px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;}
+  .cat-progress .bar > div{height:100%;background:var(--accent);border-radius:6px;transition:width .2s;width:0%;}
+  .cat-progress .pct{font-size:12px;font-weight:700;color:var(--muted);min-width:34px;text-align:right;}
+
+  .itemlist{display:flex;flex-direction:column;gap:16px;}
+  .item{border-top:1px solid var(--line);padding-top:14px;}
+  .item:first-child{border-top:none;padding-top:0;}
+  .item-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+  .item-head .label{font-size:13.5px;font-weight:700;}
+  .item-head .refval{font-size:11.5px;color:var(--muted);white-space:nowrap;}
+
+  .tiers{display:flex;flex-wrap:wrap;gap:8px;}
+  .tier-btn{flex:1 1 160px;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;cursor:pointer;font-family:inherit;color:var(--text);transition:.12s;}
+  .tier-btn:hover{border-color:var(--accent);}
+  .tier-btn b{display:block;font-size:12.5px;margin-bottom:2px;}
+  .tier-btn{font-size:11.5px;color:var(--muted);}
+  .tier-btn.sel-high{background:#E4F6F1;border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
+  .tier-btn.sel-high b{color:#00776F;}
+  .tier-btn.sel-midhigh{background:#EAF3FB;border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue);}
+  .tier-btn.sel-midhigh b{color:#1F5D91;}
+  .tier-btn.sel-mid{background:#FCF1E3;border-color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn);}
+  .tier-btn.sel-mid b{color:#8F5A1F;}
+  .tier-btn.sel-midlow{background:#FCF1E3;border-color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn);}
+  .tier-btn.sel-midlow b{color:#8F5A1F;}
+  .tier-btn.sel-low{background:#FBEAEA;border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad);}
+  .tier-btn.sel-low b{color:#A23838;}
+
+  .ratio-row{display:flex;align-items:center;gap:8px;}
+  .ratio-row input{width:110px;}
+  .ratio-row .of{font-size:12.5px;color:var(--muted);}
+  .mini-score{font-size:11.5px;color:var(--muted);margin-top:6px;}
+
+  textarea.note{width:100%;resize:none;overflow:hidden;min-height:34px;margin-top:10px;font-size:12.5px;}
+
+  .photo-section .drop{border:1.5px dashed var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel2);cursor:pointer;}
+  .photo-section .drop:hover{border-color:var(--accent);color:var(--accent);}
+  .photo-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .photo-thumb{position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:1px solid var(--line);}
+  .photo-thumb img.screen-thumb{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block;}
+  .photo-thumb img.print-thumb{display:none;}
+  .photo-thumb .del{position:absolute;top:4px;right:4px;background:rgba(20,40,38,.65);color:#fff;border:none;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1;}
+  .photo-count-hint{display:none;font-size:11.5px;color:var(--warn);margin-top:8px;}
+
+  #lightbox{display:none;position:fixed;inset:0;background:rgba(10,26,25,.85);z-index:999;align-items:center;justify-content:center;padding:30px;}
+  #lightbox.open{display:flex;}
+  #lightbox img{max-width:100%;max-height:100%;border-radius:8px;}
+  #lightboxClose{position:absolute;top:20px;right:26px;color:#fff;font-size:28px;background:none;border:none;cursor:pointer;}
+
+  .score-card{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .ring-wrap{position:relative;width:96px;height:96px;flex-shrink:0;}
+  .ring-wrap svg{width:96px;height:96px;transform:rotate(-90deg);}
+  .ring-wrap circle{fill:none;stroke-width:8;}
+  #ringBg{stroke:var(--panel2);}
+  #ringFg{stroke:var(--accent);stroke-linecap:round;transition:.25s;}
+  #scoreNum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;}
+  .score-meta{flex:1;min-width:220px;}
+  .score-meta h3{margin:0 0 4px;font-size:16px;}
+  .score-meta p{margin:0;color:var(--muted);font-size:12.5px;}
+  #warnMsg{display:none;margin-top:10px;background:#FCEFE3;color:#8F5A1F;border:1px solid #F0CFA0;border-radius:8px;padding:8px 12px;font-size:12.5px;}
+
+  .cat-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:12.5px;}
+  .cat-table td{padding:6px 4px;border-bottom:1px solid var(--line);}
+  .cat-table td.pct{text-align:right;font-weight:700;}
+
+  .next-step-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .next-step-row select{flex:1;min-width:220px;}
+
+  .general-note-wrap{margin-top:14px;}
+  .general-note-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px;}
+
+  .toolbar{position:sticky;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;box-shadow:0 -2px 8px rgba(16,60,56,.06);z-index:50;}
+  .btn{border:none;border-radius:9px;padding:11px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn.primary{background:var(--accent);color:#fff;}
+  .btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line);}
+  .btn.danger{background:#fff;color:var(--bad);border:1px solid #F0C8C8;}
+
+  .saved-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap;}
+  .saved-row .n{flex:1;font-weight:700;min-width:140px;}
+  .saved-row .d{color:var(--muted);font-size:12px;width:90px;}
+  .saved-row .s{font-weight:800;color:var(--accent);width:50px;text-align:right;}
+  .saved-row .r{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;color:#fff;white-space:nowrap;}
+  .saved-row button{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:11.5px;cursor:pointer;font-family:inherit;}
+  .saved-row button.danger{color:var(--bad);}
+
+  /* ===================== MOBILE OPTIMIZATION ===================== */
+  @media (max-width: 640px){
+    .wrap{padding:12px 12px 30px;}
+
+    header.top{flex-direction:column;padding:16px 2px 14px;margin-bottom:16px;gap:14px;}
+    .brand h1{font-size:18px;}
+    .brand .sub{font-size:12.5px;}
+
+    .meta-inputs{flex-direction:column;width:100%;gap:10px;}
+    .meta-inputs .field{width:100%;}
+    .meta-inputs input,.meta-inputs select{width:100%;min-width:0;}
+
+    .card{padding:16px 14px;border-radius:12px;margin-bottom:12px;}
+    .card h2{font-size:14px;flex-wrap:wrap;}
+    .card .hint{font-size:12px;}
+    .weight-tag{width:100%;margin-left:0;order:3;}
+
+    .seg-results{grid-template-columns:repeat(2,1fr) !important;}
+
+    .item-head{flex-direction:column;align-items:flex-start;gap:4px;}
+    .item-head .label{font-size:13px;}
+
+    .tiers{flex-direction:column;gap:8px;}
+    .tier-btn{flex:1 1 auto;width:100%;padding:12px 13px;min-height:44px;}
+    .tier-btn b{font-size:13px;}
+
+    .ratio-row{flex-wrap:wrap;}
+    .ratio-row input{width:100%;font-size:16px;padding:11px 10px;}
+    .ratio-row .of{font-size:11.5px;}
+
+    textarea.note{font-size:16px;padding:9px 10px;}
+
+    .photo-row{justify-content:space-between;}
+    .photo-thumb{width:calc(33.333% - 7px);height:auto;aspect-ratio:1/1;}
+    .drop{padding:22px 14px;font-size:14px;}
+
+    .score-card{gap:16px;}
+    .ring-wrap{width:80px;height:80px;}
+    .ring-wrap svg{width:80px;height:80px;}
+    #scoreNum{font-size:17px;}
+    .score-meta h3{font-size:14.5px;}
+    .score-meta p{font-size:12px;}
+
+    .next-step-row select{width:100%;font-size:16px;padding:10px 11px;}
+    .general-note-wrap textarea{font-size:16px;}
+
+    .saved-row{flex-wrap:wrap;padding:12px 4px;}
+    .saved-row .n{width:100%;order:1;font-size:14px;}
+    .saved-row .d{order:2;}
+    .saved-row .s{order:3;}
+    .saved-row .r{order:2;}
+    .saved-row button{flex:1;min-height:38px;order:4;}
+
+    .toolbar{flex-direction:column;padding:10px 12px;gap:8px;}
+    .btn{width:100%;min-height:46px;font-size:14.5px;}
+
+    #lightbox{padding:12px;}
+    #lightboxClose{top:10px;right:12px;}
+  }
+  @media (max-width: 400px){
+    .photo-thumb{width:calc(50% - 5px);}
+  }
+  /* =================================================================== */
+
+  #printSummary{display:none;}
+  @media print{
+    .toolbar,#lightbox,.no-print{display:none !important;}
+    body{padding-bottom:0;background:#fff;}
+    .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
+    img.screen-thumb{display:none !important;}
+    img.print-thumb{display:block !important;width:100%;height:100%;object-fit:cover;}
+    #printSummary{display:block;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Togg · Service Network Germany</div>
+      <h1>Service Partner Pre-Evaluation — Field Screening Tool</h1>
+      <div class="sub">Togg Partner Standard · single-tier field assessment for candidate locations</div>
+    </div>
+    <div class="meta-inputs">
+      <div class="field"><label>Location / Company Name</label><input type="text" id="locName" placeholder="e.g. Autodienst Bochum"></div>
+      <div class="field"><label>City</label><input type="text" id="locCity" placeholder="e.g. Bochum"></div>
+      <div class="field"><label>Visit Date</label><input type="date" id="evalDate"></div>
+      <div class="field"><label>Evaluated By</label><input type="text" id="evalBy" placeholder="Name"></div>
+      <div class="field">
+        <label>Current Brand Affiliation</label>
+        <select id="brandAffil">
+          <option value="">— select —</option>
+          <option>Bosch Car Service</option>
+          <option>Other OEM-affiliated multi-brand</option>
+          <option>Independent workshop</option>
+          <option>None / new business</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- PHOTOS -->
+  <div class="card photo-section">
+    <h2><span class="num">📷</span>Facility Photos</h2>
+    <p class="hint">Add photos of the workshop, delivery/PDI area, parking, signage and any relevant facility details.</p>
+    <label class="drop" for="photoInput">Tap to add photos from camera or gallery</label>
+    <input type="file" id="photoInput" accept="image/*" multiple capture="environment" style="display:none;">
+    <div class="photo-row" id="photoRow"></div>
+    <div class="photo-count-hint" id="photoCountHint"></div>
+  </div>
+
+  <!-- REFERENCE TARGETS -->
+  <div class="card">
+    <h2><span class="num">1</span>Togg Partner Standard — Reference Targets</h2>
+    <p class="hint">These figures are guidance for scoring below, not hard gating requirements.</p>
+    <div class="seg-results" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+      <div class="seg-pill" style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Total Workshop Area</div><div style="font-size:16px;font-weight:800;margin-top:2px;">≥ 300 m²</div></div>
+      <div class="seg-pill" style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Lifts</div><div style="font-size:16px;font-weight:800;margin-top:2px;">≥ 2</div></div>
+      <div class="seg-pill" style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Parking</div><div style="font-size:16px;font-weight:800;margin-top:2px;">≥ 15 vehicles</div></div>
+      <div class="seg-pill" style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Delivery Stations</div><div style="font-size:16px;font-weight:800;margin-top:2px;">≥ 1</div></div>
+    </div>
+  </div>
+
+  <div id="categories"></div>
+
+  <!-- RESULT SUMMARY -->
+  <div class="card" id="resultCard">
+    <h2><span class="num">★</span>Result Summary</h2>
+    <div class="score-card">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 96 96">
+          <circle id="ringBg" cx="48" cy="48" r="24"></circle>
+          <circle id="ringFg" cx="48" cy="48" r="24" stroke-dasharray="0 999"></circle>
+        </svg>
+        <div id="scoreNum">0%</div>
+      </div>
+      <div class="score-meta">
+        <h3>Pre-Suitability Score</h3>
+        <p>Weighted across all categories below. Use alongside the notes and photos for the overall recommendation — this is a screening indicator, not a final decision.</p>
+      </div>
+    </div>
+    <div id="warnMsg"></div>
+    <table class="cat-table" id="catTable"></table>
+
+    <div class="next-step-row">
+      <div class="field" style="flex:1;min-width:220px;">
+        <label>Recommendation / Next Step</label>
+        <select id="nextStep">
+          <option value="">— select —</option>
+          <option>LOI Recommended</option>
+          <option>Further Visit / More Information Needed</option>
+          <option>Hold for Future Consideration</option>
+          <option>Not Recommended</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="general-note-wrap">
+      <label class="general-note-label">General Assessment / Comments</label>
+      <textarea class="note" id="generalNote" rows="2" placeholder="Overall impression, risks, opportunities, recommendation rationale (optional)"></textarea>
+    </div>
+  </div>
+
+  <!-- SAVED LOCATIONS -->
+  <div class="card no-print">
+    <h2><span class="num">☆</span>Saved Locations <span class="weight-tag" id="savedCount"></span></h2>
+    <p class="hint">Save each visited location to build a comparison list. Data is stored locally in this browser.</p>
+    <div id="savedList"></div>
+  </div>
+
+  <!-- PRINT-ONLY SUMMARY -->
+  <div id="printSummary" class="card">
+    <h2>Togg Germany — Service Partner Pre-Evaluation Report</h2>
+    <div id="printSummaryBody"></div>
+  </div>
+
+</div>
+
+<div id="lightbox"><button id="lightboxClose">✕</button><img id="lightboxImg" alt=""></div>
+
+<div class="toolbar no-print">
+  <button class="btn ghost" id="btnReset">Reset Form</button>
+  <button class="btn ghost" id="btnPrint">Print (Desktop)</button>
+  <button class="btn primary" id="btnDownloadPdf">Download PDF Report</button>
+  <button class="btn primary" id="btnSave">Save Location</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ---------- Reference targets (single Togg Partner Standard) ----------
+const REF = { totalArea:300, lifts:2, parking:15, delivery:1 };
+const TH=100, TM=55, TL=15;
+
+const CATEGORIES = [
+  {
+    id:'alan', title:'Physical Space & Workshop Readiness', weight:20,
+    hint:'Existing / potential total workshop area, dedicated BEV-Togg space, lift capacity, internet/network infrastructure, and DC fast-charging readiness.',
+    items:[
+      { id:'toplamAlan', type:'areaRatio', label:'Existing / Potential Total Workshop & Service Area',
+        refKey:'totalArea', unit:'m²',
+        statusOptions:[
+          {v:1.0, cls:'high', title:'Ready, usable now', desc:'Space meeting the target already exists'},
+          {v:0.65, cls:'mid', title:'Partially available', desc:'Renovation / minor construction needed to complete'},
+          {v:0.3, cls:'low', title:'Not available, new construction required', desc:'Vacant plot or unsuitable structure'},
+        ]
+      },
+      { id:'bevAlan', type:'tier', label:'Dedicated / Separable BEV-Togg Service Area',
+        options:[
+          {v:TH, cls:'high', title:'Dedicated area ready', desc:'Separate, Togg-usable area already exists'},
+          {v:TM, cls:'mid', title:'Shared, adaptable', desc:'Can be separated from shared workshop with minor works'},
+          {v:TL, cls:'low', title:'No suitable area', desc:'No space identified for a dedicated or separable area'},
+        ]
+      },
+      { id:'lift', type:'areaRatio', label:'Mechanical Lift Capacity', refKey:'lifts', unit:'lifts', simple:true },
+      { id:'internetAltyapi', type:'tier', label:'Internet / Network Infrastructure (minimum 100 Mbps required)',
+        options:[
+          {v:TH, cls:'high', title:'\u2265 100 Mbps available', desc:'Confirmed or estimated connection meets or exceeds the minimum requirement'},
+          {v:TM, cls:'mid', title:'Below 100 Mbps, upgrade possible', desc:'Current speed is insufficient, but an upgrade can realistically be arranged'},
+          {v:TL, cls:'low', title:'Insufficient, no viable upgrade', desc:'Connection is well below requirement and no clear upgrade path exists'},
+        ]
+      },
+      { id:'dcAltyapi', type:'tier', label:'DC Fast-Charging Infrastructure (minimum 1 \u00d7 60kW DC station)',
+        options:[
+          {v:100, cls:'high', title:'Ready now \u2014 full score', desc:'At least one 60kW+ DC charging station is already installed and operational'},
+          {v:50, cls:'mid', title:'Not ready, but infrastructure suitable \u2014 half score', desc:'Electrical capacity/space can support adding a 60kW DC station without a transformer upgrade'},
+          {v:0, cls:'low', title:'Not suitable, transformer investment required \u2014 zero score', desc:'Existing electrical infrastructure cannot support it without a transformer upgrade'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'teslimat', title:'Delivery & PDI Setup', weight:10,
+    hint:'Space and stations for vehicle delivery and pre-delivery inspection.',
+    items:[
+      { id:'teslimatAlan', type:'tier', label:'Delivery / PDI Area Potential',
+        options:[
+          {v:TH, cls:'high', title:'Dedicated separate area available', desc:'Independent space usable for Togg delivery/PDI'},
+          {v:TM, cls:'mid', title:'Shared area, adaptable', desc:'Can be arranged within existing shared space'},
+          {v:TL, cls:'low', title:'No suitable area', desc:'No space identified'},
+        ]
+      },
+      { id:'teslimatIstasyon', type:'areaRatio', label:'Number of Delivery Stations', refKey:'delivery', unit:'stations', simple:true },
+    ]
+  },
+  {
+    id:'otopark', title:'Parking Capacity', weight:5,
+    hint:'Total parking available for customer and workshop use.',
+    items:[
+      { id:'otopark', type:'areaRatio', label:'Total Parking (Customer + Workshop)', refKey:'parking', unit:'vehicles', simple:true },
+    ]
+  },
+  {
+    id:'ev', title:'EV / HV Technical Competency', weight:15,
+    hint:'Depth of high-voltage certified staff and prior EV/BEV service experience.',
+    items:[
+      { id:'hvStaff', type:'tier', label:'HV-Certified (Level 2 or 3) Staff Availability',
+        options:[
+          {v:TH, cls:'high', title:'1 or more available', desc:'At least one HV Level 2 or Level 3 certified technician on staff'},
+          {v:TM, cls:'mid', title:'Training planned / in progress', desc:'No certified staff yet, but training scheduled or underway'},
+          {v:TL, cls:'low', title:'None, no plan', desc:'No HV-certified staff and no training plan in place'},
+        ]
+      },
+      { id:'evDeneyim', type:'tier', label:'Overall EV / BEV Service Experience',
+        options:[
+          {v:TH, cls:'high', title:'Established, fully equipped', desc:'Existing BEV service line with proper equipment'},
+          {v:TM, cls:'mid', title:'Some exposure, partial equipment', desc:'Limited BEV work done so far'},
+          {v:TL, cls:'low', title:'No EV experience', desc:'No prior BEV/EV servicing'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'ik', title:'Human Resources & Staffing Readiness', weight:20,
+    hint:'Whether current staffing can realistically cover expected Togg workload, including consultant roles that will operate on Togg\u2019s digital backbone (DMS integration, tools, processes are provided by Togg itself).',
+    items:[
+      { id:'ikDurum', type:'tier', label:'Staffing Adequacy for Expected Togg Volume',
+        options:[
+          {v:100, cls:'high', title:'Available & experienced', desc:'Sufficient trained staff on hand'},
+          {v:60, cls:'midhigh', title:'Available, needs training', desc:'Headcount is fine, training gap remains'},
+          {v:30, cls:'midlow', title:'Available but limited', desc:'Some staff, but not enough for full scope'},
+          {v:10, cls:'low', title:'Hiring required', desc:'Recruitment needed from scratch'},
+        ]
+      },
+      { id:'liderlik', type:'tier', label:'Leadership / Management Quality',
+        options:[
+          {v:TH, cls:'high', title:'Strong, structured leadership', desc:'Clear ownership/management structure'},
+          {v:TM, cls:'mid', title:'Adequate', desc:'Workable but not fully structured'},
+          {v:TL, cls:'low', title:'Weak or unclear', desc:'Leadership gap or uncertainty'},
+        ]
+      },
+      { id:'digitalServisDan', type:'tier', label:'Service Advisor — available & digitally capable',
+        options:[
+          {v:TH, cls:'high', title:'Yes, in place & capable', desc:'Service advisor on staff, comfortable using digital DMS/workshop tools'},
+          {v:TM, cls:'mid', title:'Available, needs training', desc:'Role is staffed but digital tool proficiency needs development'},
+          {v:TL, cls:'low', title:'Not available', desc:'No service advisor currently in place'},
+        ]
+      },
+      { id:'digitalYPDan', type:'tier', label:'Spare Parts Advisor — available & digitally capable',
+        options:[
+          {v:TH, cls:'high', title:'Yes, in place & capable', desc:'Spare parts advisor on staff, comfortable with digital ordering/inventory tools'},
+          {v:TM, cls:'mid', title:'Available, needs training', desc:'Role is staffed but digital tool proficiency needs development'},
+          {v:TL, cls:'low', title:'Not available', desc:'No spare parts advisor currently in place'},
+        ]
+      },
+      { id:'digitalGarantiDan', type:'tier', label:'Warranty Advisor — available & digitally capable',
+        options:[
+          {v:TH, cls:'high', title:'Yes, in place & capable', desc:'Warranty advisor on staff, comfortable with digital claims/documentation tools'},
+          {v:TM, cls:'mid', title:'Available, needs training', desc:'Role is staffed but digital tool proficiency needs development'},
+          {v:TL, cls:'low', title:'Not available', desc:'No warranty advisor currently in place'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'marka', title:'Bosch Car Service Partnership & Brand Fit', weight:10,
+    hint:'All current candidate locations already operate as Bosch Car Service partners — this measures the strength of that relationship, compatibility with other brands on site, and existing reputation.',
+    items:[
+      { id:'boschBag', type:'tier', label:'Strength of Bosch Car Service Relationship',
+        options:[
+          {v:TH, cls:'high', title:'Strong, long-standing', desc:'Established multi-year Bosch Car Service partner with a solid operational track record'},
+          {v:TM, cls:'mid', title:'Moderate / functional', desc:'Active Bosch Car Service partner, shorter or less-proven track record'},
+          {v:TL, cls:'low', title:'New or weak relationship', desc:'Recently joined the network, or relationship is unclear/strained'},
+        ]
+      },
+      { id:'uyum', type:'tier', label:'Compatibility with Other Brands Serviced',
+        options:[
+          {v:TH, cls:'high', title:'Fully compatible / complementary', desc:'No conflict with existing brand portfolio'},
+          {v:TM, cls:'mid', title:'Partial overlap, manageable', desc:'Some overlap but workable'},
+          {v:TL, cls:'low', title:'Conflict of interest risk', desc:'Competing brand relationship poses risk'},
+        ]
+      },
+      { id:'googleRating', type:'rating', label:'Current Google Rating',
+        hint:'Google rating of the location\u2019s existing service business, if available.' },
+    ]
+  },
+  {
+    id:'topluluk', title:'Turkish Community & Owner Profile', weight:10,
+    hint:'Language, community ties, and owner/operator motivation — a recurring factor in the German site visits.',
+    items:[
+      { id:'dilBaglanti', type:'tier', label:'Turkish Language / Community Connection',
+        options:[
+          {v:TH, cls:'high', title:'Strong', desc:'Turkish-speaking staff and deep community ties'},
+          {v:TM, cls:'mid', title:'Some connection', desc:'Partial language or community link'},
+          {v:TL, cls:'low', title:'None', desc:'No particular connection to the Turkish community'},
+        ]
+      },
+      { id:'sahiplikMotivasyon', type:'tier', label:'Owner / Operator Enthusiasm & Fit for Togg',
+        options:[
+          {v:TH, cls:'high', title:'High enthusiasm, strong culture fit', desc:'Clearly motivated, aligned with Togg spirit'},
+          {v:TM, cls:'mid', title:'Moderate', desc:'Interested but not fully convinced/engaged'},
+          {v:TL, cls:'low', title:'Low or unclear', desc:'Limited enthusiasm or unclear commitment'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'konum', title:'Location & Accessibility', weight:5,
+    hint:'General site indicators that influence the field decision beyond the standard checklist.',
+    items:[
+      { id:'gorunurluk', type:'tier', label:'Visibility & Accessibility (main road, signage)',
+        options:[
+          {v:TH, cls:'high', title:'High', desc:'Main road, easy access and visibility'},
+          {v:TM, cls:'mid', title:'Medium', desc:'Near main road, needs signage/wayfinding'},
+          {v:TL, cls:'low', title:'Low', desc:'Off the beaten path, weak access'},
+        ]
+      },
+      { id:'yakinlik', type:'tier', label:'Proximity to Target City Center / Turkish Community Hub',
+        options:[
+          {v:TH, cls:'high', title:'Close', desc:'Within or very near the target catchment area'},
+          {v:TM, cls:'mid', title:'Moderate distance', desc:'Reasonable but not ideal distance'},
+          {v:TL, cls:'low', title:'Far', desc:'Significant distance from target area'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'buyume', title:'Growth Potential', weight:5,
+    hint:'Forward-looking view — financial strength cannot be assessed in the field, so this substitutes a growth read instead.',
+    items:[
+      { id:'genisleme', type:'tier', label:'Expansion Potential (land / building for future growth)',
+        options:[
+          {v:TH, cls:'high', title:'Clear room to expand', desc:'Additional land/floor available if volume grows'},
+          {v:TM, cls:'mid', title:'Limited expansion possible', desc:'Some room, but constrained'},
+          {v:TL, cls:'low', title:'No expansion potential', desc:'Fully built out, no growth room'},
+        ]
+      },
+      { id:'hacimPotansiyeli', type:'tier', label:'Estimated Future Volume / Market Potential',
+        options:[
+          {v:TH, cls:'high', title:'High growth expected', desc:'City/region likely to see meaningful Togg volume growth'},
+          {v:TM, cls:'mid', title:'Stable, moderate', desc:'Modest but steady growth expected'},
+          {v:TL, cls:'low', title:'Low / uncertain', desc:'Limited or unclear growth outlook'},
+        ]
+      },
+    ]
+  },
+];
+
+let state = { values:{}, areas:{}, notes:{}, photos:[], generalNote:'', nextStep:'' };
+
+// ---------- Helpers ----------
+function autoGrowNote(el){ el.style.height='auto'; el.style.height=(el.scrollHeight+2)+'px'; }
+function tierClass(v){ if(v>=85) return 'sel-high'; if(v>=50) return 'sel-midhigh'; if(v>=25) return 'sel-mid'; return 'sel-low'; }
+function findItemById(id){
+  for(const cat of CATEGORIES){ for(const item of cat.items){ if(item.id===id) return item; } }
+  return null;
+}
+function ratingScore(val){
+  if(val===null || val===undefined || val==='' || isNaN(val)) return {score:10, label:'No data'};
+  if(val>=4.3) return {score:100, label:'High (\u22654.3)'};
+  if(val>=3.5) return {score:60, label:'Medium (3.5\u20134.2)'};
+  return {score:30, label:'Low (<3.5)'};
+}
+
+// ---------- Build markup (once) ----------
+function tierButtonsHTML(itemId, options, isStatus){
+  return options.map(o=>`<button type="button" class="tier-btn" data-item="${itemId}" data-v="${o.v}"><b>${o.title}</b>${o.desc}</button>`).join('');
+}
+function itemHTML(item){
+  if(item.type==='tier'){
+    return `<div class="item" data-item-row="${item.id}">
+      <div class="item-head"><div class="label">${item.label}</div></div>
+      <div class="tiers">${tierButtonsHTML(item.id, item.options)}</div>
+      <textarea class="note" rows="1" placeholder="Add a note (optional)" data-item="${item.id}"></textarea>
+    </div>`;
+  } else if(item.type==='areaRatio'){
+    const ref = REF[item.refKey];
+    if(item.simple){
+      return `<div class="item" data-item-row="${item.id}">
+        <div class="item-head"><div class="label">${item.label}</div><div class="refval">reference: \u2265 ${ref} ${item.unit}</div></div>
+        <div class="ratio-row"><input type="number" min="0" data-item="${item.id}" id="area_${item.id}" placeholder="0"><span class="of">${item.unit} existing / potential</span></div>
+        <div class="mini-score" id="mini_${item.id}"></div>
+        <textarea class="note" rows="1" placeholder="Add a note (optional)" data-item="${item.id}"></textarea>
+      </div>`;
+    } else {
+      return `<div class="item" data-item-row="${item.id}">
+        <div class="item-head"><div class="label">${item.label}</div><div class="refval">reference: \u2265 ${ref} ${item.unit}</div></div>
+        <div class="ratio-row"><input type="number" min="0" data-item="${item.id}" id="area_${item.id}" placeholder="0"><span class="of">${item.unit} existing / potential</span></div>
+        <div class="tiers" style="margin-top:8px;">${tierButtonsHTML(item.id+'_status', item.statusOptions, true)}</div>
+        <div class="mini-score" id="mini_${item.id}"></div>
+        <textarea class="note" rows="1" placeholder="Add a note (optional)" data-item="${item.id}"></textarea>
+      </div>`;
+    }
+  } else if(item.type==='rating'){
+    return `<div class="item" data-item-row="${item.id}">
+      <div class="item-head"><div class="label">${item.label}</div></div>
+      <p class="hint" style="margin:0 0 8px;">${item.hint||''}</p>
+      <div class="ratio-row"><input type="number" min="0" max="5" step="0.1" data-item="${item.id}" id="area_${item.id}" placeholder="e.g. 4.2"><span class="of">/ 5.0 \u2014 leave blank if unknown</span></div>
+      <div class="mini-score" id="mini_${item.id}"></div>
+      <textarea class="note" rows="1" placeholder="Add a note (optional)" data-item="${item.id}"></textarea>
+    </div>`;
+  }
+  return '';
+}
+function buildCategoriesHTML(){
+  const root = document.getElementById('categories');
+  root.innerHTML = CATEGORIES.map((cat,idx)=>`
+    <div class="card" data-cat="${cat.id}">
+      <h2><span class="num">${idx+2}</span>${cat.title}<span class="weight-tag">weight ${cat.weight}%</span></h2>
+      <p class="hint">${cat.hint}</p>
+      <div class="cat-progress"><div class="bar"><div id="catbar_${cat.id}"></div></div><div class="pct" id="catpct_${cat.id}">0%</div></div>
+      <div class="itemlist">${cat.items.map(itemHTML).join('')}</div>
+    </div>
+  `).join('');
+}
+
+// ---------- Score calc ----------
+function itemScore(item){
+  if(item.type==='tier'){
+    const v = state.values[item.id];
+    return v===undefined? null : v;
+  } else if(item.type==='areaRatio'){
+    const ref = REF[item.refKey];
+    const area = state.areas[item.id]||0;
+    const ratio = ref>0? Math.min(1, area/ref):0;
+    if(item.simple) return ratio*100;
+    const status = state.values[item.id+'_status'];
+    if(status===undefined) return null;
+    return ratio*status*100;
+  } else if(item.type==='rating'){
+    const val = state.areas[item.id];
+    return ratingScore(val).score;
+  }
+  return null;
+}
+function catScoreParts(cat){
+  let sum=0, count=0;
+  cat.items.forEach(item=>{
+    const s = itemScore(item);
+    count++;
+    sum += (s===null?0:s);
+  });
+  return {sum, count};
+}
+
+// ---------- Targeted UI updates ----------
+function syncTierGroup(itemId, val){
+  document.querySelectorAll(`.tier-btn[data-item="${itemId}"]`).forEach(b=>{
+    b.classList.remove('sel-high','sel-midhigh','sel-mid','sel-midlow','sel-low');
+    if(val!==undefined && val!==null && parseFloat(b.dataset.v)===val){
+      const isStatus = itemId.endsWith('_status');
+      b.classList.add(tierClass(isStatus ? val*100 : val));
+    }
+  });
+}
+function renderMini(item){
+  const el = document.getElementById('mini_'+item.id);
+  if(!el) return;
+  const ref = REF[item.refKey];
+  const area = state.areas[item.id]||0;
+  const ratio = ref>0 ? Math.min(1, area/ref) : 0;
+  if(item.simple){
+    const score = ratio*100;
+    el.textContent = `${area} / ${ref} ${item.unit} \u2192 ratio ${Math.round(ratio*100)}% \u2192 score ${Math.round(score)}%`;
+  } else {
+    const status = state.values[item.id+'_status'];
+    if(status===undefined){ el.textContent = `${area} / ${ref} ${item.unit} \u2192 ratio ${Math.round(ratio*100)}% (status not selected)`; }
+    else { const score = ratio*status*100; el.textContent = `${area} / ${ref} ${item.unit} \u2192 ratio ${Math.round(ratio*100)}% \u00d7 status factor ${status} \u2192 score ${Math.round(score)}%`; }
+  }
+}
+function renderRatingMini(item){
+  const el = document.getElementById('mini_'+item.id);
+  if(!el) return;
+  const val = state.areas[item.id];
+  const {score,label} = ratingScore(val);
+  el.textContent = `${val!==null && val!==undefined && val!==''? val : '\u2014'} / 5.0 \u2192 ${label} \u2192 score ${score}%`;
+}
+function syncUIFromState(){
+  CATEGORIES.forEach(cat=>{
+    cat.items.forEach(item=>{
+      if(item.type==='tier'){
+        syncTierGroup(item.id, state.values[item.id]);
+      } else if(item.type==='areaRatio'){
+        const inp = document.getElementById('area_'+item.id);
+        if(inp) inp.value = state.areas[item.id] ?? '';
+        if(!item.simple) syncTierGroup(item.id+'_status', state.values[item.id+'_status']);
+        renderMini(item);
+      } else if(item.type==='rating'){
+        const inp = document.getElementById('area_'+item.id);
+        if(inp) inp.value = state.areas[item.id] ?? '';
+        renderRatingMini(item);
+      }
+      const noteEl = document.querySelector(`textarea.note[data-item="${item.id}"]`);
+      if(noteEl){ noteEl.value = state.notes[item.id]||''; autoGrowNote(noteEl); }
+    });
+  });
+}
+
+function nextStepColor(v){
+  if(v==='LOI Recommended') return 'var(--accent)';
+  if(v==='Further Visit / More Information Needed') return 'var(--blue)';
+  if(v==='Hold for Future Consideration') return 'var(--warn)';
+  if(v==='Not Recommended') return 'var(--bad)';
+  return 'var(--muted)';
+}
+
+function updateScore(){
+  let weightedTotal = 0;
+  let lowFlags = [];
+  let catBreakdown = [];
+  CATEGORIES.forEach(cat=>{
+    const {sum,count} = catScoreParts(cat);
+    const catPct = count? sum/count/100 : 0;
+    weightedTotal += catPct*cat.weight;
+    const pctRounded = Math.round(catPct*100);
+    catBreakdown.push({title:cat.title, weight:cat.weight, pct:pctRounded});
+    const barEl = document.getElementById('catbar_'+cat.id);
+    const pctEl = document.getElementById('catpct_'+cat.id);
+    if(barEl) barEl.style.width = pctRounded+'%';
+    if(pctEl) pctEl.textContent = pctRounded+'%';
+    cat.items.forEach(item=>{
+      const s = itemScore(item);
+      if(s!==null && s<=TL+5) lowFlags.push(item.label);
+    });
+  });
+  const score = Math.round(weightedTotal);
+  document.getElementById('scoreNum').textContent = score+'%';
+  const circumference = 2*Math.PI*24;
+  const fg = document.getElementById('ringFg');
+  fg.setAttribute('stroke-dasharray', `${(score/100)*circumference} ${circumference}`);
+  fg.style.stroke = score>=75?'#009e97':score>=45?'#2e7fbf':'#c97a2e';
+  const warnEl = document.getElementById('warnMsg');
+  if(lowFlags.length>0){
+    warnEl.style.display='block';
+    warnEl.textContent = `\u26a0 ${lowFlags.length} criteria flagged as low: ${lowFlags.slice(0,3).join(' \u00b7 ')}${lowFlags.length>3?' \u2026':''}`;
+  } else { warnEl.style.display='none'; }
+  document.getElementById('catTable').innerHTML = catBreakdown.map(c=>`<tr><td>${c.title} (weight ${c.weight}%)</td><td class="pct">${c.pct}%</td></tr>`).join('');
+  renderPrintSummary(score, catBreakdown, lowFlags);
+  return score;
+}
+
+function renderPrintSummary(score, catBreakdown, lowFlags){
+  const el = document.getElementById('printSummaryBody');
+  if(!el) return;
+  const name = document.getElementById('locName').value || '\u2014';
+  const city = document.getElementById('locCity').value || '\u2014';
+  const date = document.getElementById('evalDate').value || '\u2014';
+  const by = document.getElementById('evalBy').value || '\u2014';
+  const brand = document.getElementById('brandAffil').value || '\u2014';
+  const next = state.nextStep || '\u2014';
+  const rows = catBreakdown.map(c=>`<tr><td>${c.title} (weight ${c.weight}%)</td><td class="pct">${c.pct}%</td></tr>`).join('');
+  const flagsHtml = lowFlags.length? `<div style="color:var(--bad);font-size:12.5px;margin-top:10px;">\u26a0 Criteria flagged as low: ${lowFlags.join(' \u00b7 ')}</div>` : '';
+  el.innerHTML = `
+    <p><b>Location:</b> ${name} &nbsp;\u00b7&nbsp; <b>City:</b> ${city} &nbsp;\u00b7&nbsp; <b>Date:</b> ${date} &nbsp;\u00b7&nbsp; <b>Evaluated by:</b> ${by}</p>
+    <p><b>Brand affiliation:</b> ${brand}</p>
+    <div style="font-size:34px;font-weight:800;color:var(--accent);margin:10px 0;">${score}% <span style="font-size:14px;color:var(--muted);font-weight:600;">Pre-Suitability Score</span></div>
+    <p><b>Recommendation / Next Step:</b> <span style="color:${nextStepColor(next)};font-weight:800;">${next}</span></p>
+    <table class="cat-table">${rows}</table>
+    ${flagsHtml}
+    ${state.generalNote?`<div style="margin-top:14px;"><b>General Assessment:</b><p style="white-space:pre-wrap;">${state.generalNote}</p></div>`:''}
+  `;
+}
+
+// ---------- Direct PDF download (does not rely on the browser print dialog) ----------
+async function generatePDF(){
+  const btn = document.getElementById('btnDownloadPdf');
+  const originalLabel = btn.textContent;
+  try{
+    if(typeof window.jspdf === 'undefined'){
+      alert('The PDF engine is still loading. This needs an internet connection the first time you use it on this device — please wait a few seconds and try again.');
+      return;
+    }
+    btn.textContent = 'Generating…'; btn.disabled = true;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'pt', format:'a4' });
+    const marginX = 44;
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    let y = 54;
+
+    function ensureSpace(h){ if(y + h > pageH - 44){ doc.addPage(); y = 54; } }
+    function addTitle(text, size=15){
+      ensureSpace(size+10);
+      doc.setFont('helvetica','bold'); doc.setFontSize(size); doc.setTextColor('#16302E');
+      doc.text(text, marginX, y); y += size+8;
+    }
+    function addText(text, size=10.5, color='#16302E', bold=false){
+      doc.setFont('helvetica', bold?'bold':'normal'); doc.setFontSize(size); doc.setTextColor(color);
+      const lines = doc.splitTextToSize(text, pageW - marginX*2);
+      lines.forEach(line=>{ ensureSpace(size+5); doc.text(line, marginX, y); y += size+5; });
+    }
+    function addRule(){ ensureSpace(10); doc.setDrawColor('#D8ECEA'); doc.line(marginX, y, pageW-marginX, y); y += 14; }
+
+    const name = document.getElementById('locName').value.trim() || 'Unnamed Location';
+    const city = document.getElementById('locCity').value || '\u2014';
+    const date = document.getElementById('evalDate').value || '\u2014';
+    const by = document.getElementById('evalBy').value || '\u2014';
+    const brand = document.getElementById('brandAffil').value || '\u2014';
+    const next = state.nextStep || '\u2014';
+    const score = updateScore();
+
+    addTitle('Togg Germany \u2014 Service Partner Pre-Evaluation Report', 15);
+    addText(`Location: ${name}    \u00b7    City: ${city}    \u00b7    Date: ${date}    \u00b7    Evaluated by: ${by}`);
+    addText(`Brand affiliation: ${brand}`);
+    y += 6;
+    addTitle(`Pre-Suitability Score: ${score}%`, 22);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(nextStepColorHex(next));
+    doc.text(`Recommendation / Next Step: ${next}`, marginX, y); y += 22;
+    addRule();
+
+    addTitle('Category Breakdown', 12.5);
+    const lowFlags = [];
+    CATEGORIES.forEach(cat=>{
+      const {sum,count} = catScoreParts(cat);
+      const pct = count? Math.round(sum/count) : 0;
+      addText(`${cat.title}  (weight ${cat.weight}%)`, 10.5, '#16302E', false);
+      addText(`${pct}%`, 10.5, '#009E97', true);
+      cat.items.forEach(item=>{
+        const s = itemScore(item);
+        if(s!==null && s<=TL+5) lowFlags.push(item.label);
+      });
+    });
+    y += 4;
+    if(lowFlags.length){
+      addText(`\u26a0 Criteria flagged as low: ${lowFlags.join(' \u00b7 ')}`, 9.5, '#C97A2E');
+      y += 4;
+    }
+    if(state.generalNote){
+      addRule();
+      addTitle('General Assessment', 12);
+      addText(state.generalNote, 10.5);
+    }
+
+    if(state.photos.length){
+      doc.addPage(); y = 54;
+      addTitle(`Facility Photos (${state.photos.length})`, 13);
+      const gap = 16;
+      const imgSize = (pageW - marginX*2 - gap) / 2;
+      for(let i=0; i<state.photos.length; i+=2){
+        ensureSpace(imgSize + 10);
+        const rowPhotos = [state.photos[i], state.photos[i+1]].filter(Boolean);
+        rowPhotos.forEach((p, colIdx)=>{
+          const x = marginX + colIdx*(imgSize+gap);
+          try{ doc.addImage(p.largeUrl, 'JPEG', x, y, imgSize, imgSize, undefined, 'MEDIUM'); }
+          catch(err){ console.error('Could not add photo to PDF', err); }
+        });
+        y += imgSize + gap;
+      }
+    }
+
+    const safeName = name.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g,'') || 'location';
+    doc.save(`Togg_DE_PreEval_${safeName}.pdf`);
+  }catch(err){
+    console.error(err);
+    alert('PDF generation failed. Please try again — if it keeps happening, try removing a few photos first.');
+  }finally{
+    btn.textContent = originalLabel; btn.disabled = false;
+  }
+}
+function nextStepColorHex(v){
+  if(v==='LOI Recommended') return '#009E97';
+  if(v==='Further Visit / More Information Needed') return '#2E7FBF';
+  if(v==='Hold for Future Consideration') return '#C97A2E';
+  if(v==='Not Recommended') return '#D14C4C';
+  return '#5E7876';
+}
+
+// ---------- Persistence ----------
+const STORAGE_KEY = 'togg_de_partner_preeval_v3';
+function loadSavedList(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY))||{}; }catch(e){ return {}; } }
+
+// ---------- Photo storage (IndexedDB — much larger capacity than localStorage) ----------
+const PHOTO_DB_NAME = 'togg_de_preeval_photos_db';
+const PHOTO_STORE = 'photos';
+let photoDBPromise = null;
+function openPhotoDB(){
+  if(photoDBPromise) return photoDBPromise;
+  photoDBPromise = new Promise((resolve,reject)=>{
+    const req = indexedDB.open(PHOTO_DB_NAME, 1);
+    req.onupgradeneeded = ()=>{
+      const db = req.result;
+      if(!db.objectStoreNames.contains(PHOTO_STORE)) db.createObjectStore(PHOTO_STORE, { keyPath:'name' });
+    };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+  return photoDBPromise;
+}
+async function savePhotosToDB(name, photos){
+  const db = await openPhotoDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).put({ name, photos });
+    tx.oncomplete = ()=> resolve();
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+async function loadPhotosFromDB(name){
+  const db = await openPhotoDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(PHOTO_STORE, 'readonly');
+    const req = tx.objectStore(PHOTO_STORE).get(name);
+    req.onsuccess = ()=> resolve(req.result ? req.result.photos : []);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function deletePhotosFromDB(name){
+  const db = await openPhotoDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).delete(name);
+    tx.oncomplete = ()=> resolve();
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+
+function renderSavedList(){
+  const data = loadSavedList();
+  const el = document.getElementById('savedList');
+  const names = Object.keys(data);
+  document.getElementById('savedCount').textContent = names.length? `(${names.length})` : '';
+  if(names.length===0){ el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">No saved locations yet.</div>'; return; }
+  el.innerHTML='';
+  names.sort((a,b)=>(data[b].score||0)-(data[a].score||0)).forEach(name=>{
+    const rec = data[name];
+    const row = document.createElement('div'); row.className='saved-row';
+    const nextBadge = rec.nextStep ? `<span class="r" style="background:${nextStepColor(rec.nextStep)}">${rec.nextStep}</span>` : '';
+    row.innerHTML = `<div class="n">${name} <span style="color:var(--muted);font-weight:400;">(${rec.city||'\u2014'})</span></div>
+      <div class="d">${rec.date||''}</div>${nextBadge}<div class="s">${rec.score||0}%</div>
+      <button data-name="${name}" class="loadBtn">Load</button><button data-name="${name}" class="delBtn danger">Delete</button>`;
+    el.appendChild(row);
+  });
+  el.querySelectorAll('.loadBtn').forEach(b=>b.addEventListener('click', e=>loadRecord(e.target.dataset.name)));
+  el.querySelectorAll('.delBtn').forEach(b=>b.addEventListener('click', e=>deleteRecord(e.target.dataset.name)));
+}
+async function saveRecord(){
+  const name = document.getElementById('locName').value.trim() || 'Unnamed Location';
+  state.nextStep = document.getElementById('nextStep').value;
+  const score = updateScore();
+  const data = loadSavedList();
+  data[name] = {
+    score, date: document.getElementById('evalDate').value || new Date().toISOString().slice(0,10),
+    city: document.getElementById('locCity').value, evalBy: document.getElementById('evalBy').value,
+    brandAffil: document.getElementById('brandAffil').value, nextStep: state.nextStep,
+    values: state.values, areas: state.areas, notes: state.notes, generalNote: state.generalNote,
+    photoCount: state.photos.length,
+  };
+  try{
+    await savePhotosToDB(name, state.photos);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    renderSavedList();
+    alert(`"${name}" saved \u2014 Pre-Suitability Score: ${score}%`);
+  }catch(err){
+    alert('Save failed. Please try again — if this keeps happening, try removing a few photos.');
+    console.error(err);
+  }
+}
+async function loadRecord(name){
+  const data = loadSavedList(); const rec = data[name]; if(!rec) return;
+  document.getElementById('locName').value = name;
+  document.getElementById('locCity').value = rec.city||'';
+  document.getElementById('evalDate').value = rec.date||'';
+  document.getElementById('evalBy').value = rec.evalBy||'';
+  document.getElementById('brandAffil').value = rec.brandAffil||'';
+  document.getElementById('nextStep').value = rec.nextStep||'';
+  state.values = rec.values||{}; state.areas = rec.areas||{}; state.notes = rec.notes||{};
+  state.generalNote = rec.generalNote||''; state.nextStep = rec.nextStep||'';
+  try{ state.photos = await loadPhotosFromDB(name); }catch(err){ state.photos = []; console.error(err); }
+  syncUIFromState(); updateScore(); renderPhotos();
+  const gn = document.getElementById('generalNote'); gn.value = state.generalNote; autoGrowNote(gn);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function deleteRecord(name){
+  if(!confirm(`Delete "${name}"?`)) return;
+  const data = loadSavedList(); delete data[name];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try{ await deletePhotosFromDB(name); }catch(err){ console.error(err); }
+  renderSavedList();
+}
+function resetAll(){
+  if(!confirm('Reset all inputs and selections?')) return;
+  state = { values:{}, areas:{}, notes:{}, photos:[], generalNote:'', nextStep:'' };
+  document.getElementById('locName').value='';
+  document.getElementById('locCity').value='';
+  document.getElementById('evalBy').value='';
+  document.getElementById('brandAffil').value='';
+  document.getElementById('nextStep').value='';
+  document.getElementById('generalNote').value='';
+  syncUIFromState(); updateScore(); renderPhotos();
+}
+
+// ---------- Photo gallery ----------
+function loadImageFromFile(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=> resolve(img);
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function resizeImageToDataUrl(img, maxDim, quality){
+  let w = img.width, h = img.height;
+  if(w>h && w>maxDim){ h = Math.round(h*maxDim/w); w = maxDim; }
+  else if(h>=w && h>maxDim){ w = Math.round(w*maxDim/h); h = maxDim; }
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL('image/jpeg', quality);
+}
+function renderPhotos(){
+  const row = document.getElementById('photoRow');
+  if(!row) return;
+  row.innerHTML = '';
+  state.photos.forEach(p=>{
+    const thumb = document.createElement('div');
+    thumb.className = 'photo-thumb';
+    thumb.innerHTML = `
+      <img class="screen-thumb" src="${p.thumbUrl}" alt="Facility photo">
+      <img class="print-thumb" src="${p.largeUrl}" alt="Facility photo">
+      <button type="button" class="del" data-id="${p.id}">\u2715</button>`;
+    thumb.querySelector('.screen-thumb').addEventListener('click', ()=> openLightbox(p.largeUrl));
+    thumb.querySelector('.del').addEventListener('click', e=>{ e.stopPropagation(); deletePhoto(p.id); });
+    row.appendChild(thumb);
+  });
+  const hint = document.getElementById('photoCountHint');
+  if(state.photos.length > 15){
+    hint.style.display = 'block';
+    hint.textContent = `${state.photos.length} photos added \u2014 photos are stored locally with plenty of room, but a very large number can slow down printing/PDF export. Consider removing ones you don't need.`;
+  } else {
+    hint.style.display = 'none';
+  }
+}
+function deletePhoto(id){
+  state.photos = state.photos.filter(p=>p.id!==id);
+  renderPhotos();
+}
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+}
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+document.getElementById('lightbox').addEventListener('click', e=>{ if(e.target.id==='lightbox') closeLightbox(); });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLightbox(); });
+
+document.getElementById('photoInput').addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files||[]);
+  for(const file of files){
+    try{
+      const img = await loadImageFromFile(file);
+      const thumbUrl = resizeImageToDataUrl(img, 900, 0.72);
+      const largeUrl = resizeImageToDataUrl(img, 1800, 0.90);
+      state.photos.push({id: 'p'+Date.now()+Math.random().toString(36).slice(2,7), thumbUrl, largeUrl});
+    }catch(err){ console.error('Could not process photo', err); }
+  }
+  renderPhotos();
+  e.target.value = '';
+});
+
+// ---------- Event delegation for the whole categories block ----------
+const categoriesEl = document.getElementById('categories');
+
+categoriesEl.addEventListener('click', e=>{
+  const btn = e.target.closest('.tier-btn');
+  if(!btn) return;
+  const itemId = btn.dataset.item;
+  const v = parseFloat(btn.dataset.v);
+  state.values[itemId] = v;
+  syncTierGroup(itemId, v);
+  if(itemId.endsWith('_status')){
+    const baseItem = findItemById(itemId.replace('_status',''));
+    if(baseItem) renderMini(baseItem);
+  }
+  updateScore();
+});
+
+categoriesEl.addEventListener('input', e=>{
+  const el = e.target;
+  if(el.tagName==='TEXTAREA' && el.classList.contains('note')){
+    const itemId = el.dataset.item;
+    state.notes[itemId] = el.value;
+    autoGrowNote(el);
+    return;
+  }
+  if(el.tagName==='INPUT' && el.type==='number'){
+    const itemId = el.dataset.item;
+    const item = findItemById(itemId);
+    if(!item) return;
+    if(item.type==='rating'){
+      state.areas[itemId] = el.value===''? null : parseFloat(el.value);
+      renderRatingMini(item);
+    } else {
+      state.areas[itemId] = parseFloat(el.value)||0;
+      renderMini(item);
+    }
+    updateScore();
+  }
+});
+
+// ---------- Init ----------
+buildCategoriesHTML();
+document.getElementById('evalDate').value = new Date().toISOString().slice(0,10);
+document.getElementById('generalNote').addEventListener('input', e=>{ state.generalNote = e.target.value; autoGrowNote(e.target); updateScore(); });
+document.getElementById('nextStep').addEventListener('change', e=>{ state.nextStep = e.target.value; updateScore(); });
+document.getElementById('btnSave').addEventListener('click', saveRecord);
+document.getElementById('btnReset').addEventListener('click', resetAll);
+document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
+document.getElementById('btnDownloadPdf').addEventListener('click', generatePDF);
+
+window.addEventListener('beforeprint', ()=>{
+  document.querySelectorAll('textarea.note').forEach(autoGrowNote);
+});
+
+updateScore();
+renderSavedList();
+renderPhotos();
+</script>
+</body>
+</html>

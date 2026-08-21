@@ -1,7 +1,8 @@
 // Togg Germany Partner Pre-Evaluation — Service Worker
-// Bump CACHE_VERSION whenever index.html (or any app-shell file) is updated,
-// so returning users automatically pick up the new version.
-const CACHE_VERSION = 'togg-de-preeval-v1';
+// Bump CACHE_VERSION whenever any app-shell file list changes (rare — e.g. new icon added).
+// index.html content updates do NOT need a version bump: the network-first
+// strategy below always fetches the latest file when online.
+const CACHE_VERSION = 'togg-de-preeval-v2';
 
 const APP_SHELL = [
   './',
@@ -34,34 +35,17 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  const url = new URL(req.url);
-  const isSameOrigin = url.origin === self.location.origin;
-
-  if (isSameOrigin) {
-    // App shell: cache-first, so the app opens instantly and works offline.
-    event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req)
-          .then((res) => {
-            const resClone = res.clone();
-            caches.open(CACHE_VERSION).then((cache) => cache.put(req, resClone));
-            return res;
-          })
-          .catch(() => cached);
+  // Network-first for everything (app shell AND external resources like jsPDF):
+  // always serve the freshest version when online, fall back to the cached
+  // copy only when offline. This is what lets a GitHub update reach the
+  // installed app automatically on the next open, with no manual steps.
+  event.respondWith(
+    fetch(req)
+      .then((res) => {
+        const resClone = res.clone();
+        caches.open(CACHE_VERSION).then((cache) => cache.put(req, resClone));
+        return res;
       })
-    );
-  } else {
-    // External resources (e.g. the jsPDF library from cdnjs): network-first
-    // so updates are picked up, falling back to cache when offline.
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const resClone = res.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(req, resClone));
-          return res;
-        })
-        .catch(() => caches.match(req))
-    );
-  }
+      .catch(() => caches.match(req))
+  );
 });
